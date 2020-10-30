@@ -3,15 +3,42 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "devstart": "nodemon ./bin/www",
+    "test": "jasmine",
+    "email": "node ./mailer/mailer2.js"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.4",
+    "bcrypt": "^5.0.0",
+    "bootstrap": "^4.5.3",
+    "connect-mongodb-session": "^2.4.1",
+    "cookie-parser": "^1.4.5",
+    "crypto": "^1.0.1",
+    "crypto.js": "^2.0.2",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "http-errors": "^1.6.3",
+    "jade": "^1.11.0",
+    "jquery": "^3.5.1",
+    "jsonwebtoken": "^8.5.1",
+    "leaflet": "^1.7.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.10.11",
+    "mongoose-unique-validator": "^2.0.3",
     "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "newrelic": "^6.14.0",
+    "nodemailer": "^6.4.14",
+    "nodemailer-sendgrid-transport": "^0.2.0",
+    "open-iconic": "^1.1.1",
+    "passport": "^0.4.1",
+    "passport-facebook-token": "^4.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "passport-session": "^1.0.2",
+    "request": "^2.88.2",
+    "tooltip.js": "^1.3.3"
   },
   "description": "Venta y compra de bicicletas",
   "main": "app.js",
@@ -20,5 +47,10 @@
     "url": "\u0016https://github.com/sngrisa/samuelebicicletas.git"
   },
   "author": "Santiago Grisafi",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jasmine": "^3.6.2",
+    "nodemon": "^2.0.6",
+    "pug": "^2.0.4"
+  }
 }
