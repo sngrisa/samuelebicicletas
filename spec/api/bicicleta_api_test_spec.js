@@ -1,35 +1,58 @@
-var Bicicleta = require('../../models/bicicleta2');
+var Bicicleta = require('../../models/bicicleta');
 var request = require('request');
 var server = require('../../bin/www');
+var mongoose = require('mongoose');
 
-describe('Bicicleta API', ()=>{
-    describe('GET BICICLETAS', ()=>{
-        it('Status 200', () =>{
-            expect(Bicicleta.allBicis.length).toBe(2);
-            var aBici = new Bicicleta({id: 1, color:"verde", modelo:"urbana", ubicacion: [-34, -55]});
-            Bicicleta.add(aBici);
+var base_url = "http://localhost:3000/api/bicicletas";
 
-            request.get('http://localhost:3000/api/bicicletas2'), function(error, responsibe, body){
-                expect(response.statusCode).toBe(200);
-            };
-    });
-    });
 
-    describe('POST BICICLETAS /create', () =>{
-        it('Status 200', (done) =>{
-            var headers = {'content-type': 'application/json'};
-            var aBici= '{"id": 100 , "color":"rojo", "modelo":"pista", "lat":-34, "lng":-55 }';
-            request.post({
-               headers: headers,
-               url:  'http://localhost:3000/api/bicicletas2/create',
-               body: aBici
-            }),
-                function(error,response,body) {
-                expect(response.statusCode).toBe(200)
-                expect(Bicicleta.findById(1).color).toBe("verde");
-                expect(Bicicleta.findById(1).modelo).toBe("pista");
-            };
-            done();
-        });
+describe('EQUIPOS API', () => {
+    beforeAll(function(done) {
+      mongoose.connection.close().then(() => {
+        var mongoDB = 'mongodb://localhost/testdb';
+        mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+  
+        const db = mongoose.connection;
+        db.on('error', console.error.bind(console, 'connection error'));
+        db.once('open', function() {
+          console.log('We are connected to test database');
+          done();
+      });
     });
+});
+
+afterEach(function(done) {
+    Bicicleta.deleteMany({}, function(err, success){
+      if(err) console.log(err);
+      done();
+    });
+  });
+
+  describe('GET BICICLETAS /', () => {
+    it('Status 200', (done) => {
+      request.get(base_url, function(error, response, body){
+        var result = JSON.parse(body);
+        expect(response.statusCode).toBe(200);
+        done();
+      });
+    });
+  });
+
+describe('POST BICICLETAS /create', () => {
+    it('STATUS 200', (done) => {
+      var headers = {'content-type' : 'application/json'};
+      var bici = '{"code": 1 , "color": "azul", "modelo":"BMX"}';
+      request.post({
+        headers: headers,
+        url: base_url + '/create',
+        body: bici,
+        },
+        function(error, response, body) {
+        expect(response.statusCode).toBe(200);
+        console.log((body).bici);
+        console.log(bici);
+        done();
+      });
+    });
+});
 });
