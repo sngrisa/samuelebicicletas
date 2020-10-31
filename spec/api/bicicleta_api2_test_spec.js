@@ -13,9 +13,16 @@ describe('Bicicleta API', ()=>{
         mongoose.connect(mongoDB, {useNewUrlParser:true, useUnifiedTopology: true});
 
         const db = mongoose.connection;
+
         const schema = new Schema({
-            _id: String,
+            _id: [Number],
             name: String
+          });
+
+          schema.pre('save', function(next) {
+            this._id = undefined;
+            console.log(this.tags);
+            next();
           });
 
         db.on('error', console.error.bind(console, 'connection error') );
@@ -49,10 +56,11 @@ describe('Bicicleta API', ()=>{
   
     describe('POST BICICLETAS /create', ()=>{
         it('status 200', (done)=>{
+
             var headers = {'content-type':'application/json'}
             
             var aBici = '{"code": 10, "color":"violeta", "modelo":"urbana", "lat":-34.6112424, "lng":-58.5412424}';
-           
+
             request.post({
                 headers: headers,
                 url: 'http://localhost:3000/api/bicicletas/create',

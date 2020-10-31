@@ -11,7 +11,6 @@ var bicicletaSchema = new Schema({
 })
 
 bicicletaSchema.statics.createInstance = function(code, color, modelo, ubicacion){ 
-
     return new this({
         code: code,
         color: color,
@@ -21,7 +20,7 @@ bicicletaSchema.statics.createInstance = function(code, color, modelo, ubicacion
 };
 
 bicicletaSchema.methods.toString = function(){
-    return 'id: ' + this.code + ' - color: ' + this.color;
+    return 'code: ' + this.code + ' | color: ' + this.color;
 };
 
 bicicletaSchema.statics.allBicis = function(cb){ //cb: callback

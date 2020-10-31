@@ -57,7 +57,7 @@ usuarioSchema.methods.validPassword = function(password){
 }
 
 usuarioSchema.methods.reservar = function(biciId, desde, hasta, cb){
-    var reserva = new Rerserva({
+    var reserva = new Reserva({
         usuario: this._id,
         bicicleta: biciId,
         desde: desde,
