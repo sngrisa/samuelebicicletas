@@ -1,7 +1,8 @@
-var Bicicleta = require('../models/bicicleta');
+var Bicicleta =require('../models/bicicleta');
 
 
-exports.bicicleta_list =function(req, res){ 
+exports.bicicleta_list =function(req, res){
+    //All the bicicletas will show 
     res.render('bicicletas/index',{bicis:Bicicleta.allBicis});
 }
 

@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Samuele Bicicletas' });
+  res.render('index', { title: 'El Cairo Bicicleteria' });
 });
 
 module.exports = router;
