@@ -3,12 +3,12 @@ extends ../layout
 block content
    br
    text-center
-   a.btn.btn-secondary(href='/bicicletas2') Volver
+   a.btn.btn-secondary(href='/bicicletas') Volver
    br
    h4.text-center Añadir una nueva Bicicleta
        h6.text-center
         br
-        form(action='/bicicletas2/create' method='post')
+        form(action='/bicicletas/create' method='post')
             label(for='id') Ingrese un id:
             input#id(type='text' name='id')
             br

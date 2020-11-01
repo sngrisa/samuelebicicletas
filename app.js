@@ -1,164 +1,260 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+require('newrelic');
+require('dotenv').config();
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 const passport = require('./config/passport');
-const session = require('express-session')
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const jwt = require('jsonwebtoken');
 
+// Models
+const Usuario = require('./models/usuario');
+const Token = require('./models/token');
 
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/usuarios');
+var bicicletasRouter = require('./routes/bicicletas');
+var tokenRouter = require('./routes/token');
 
-//Routes
-const indexRouter = require('./routes/index');
-const usuariosRouter = require('./routes/usuarios');
-const bicicletasRouter = require('./routes/bicicletas');
-const bicicletasAPIRouter = require('./routes/api/bicicletas');
-const usuariosAPIRouter = require('./routes/api/usuarios');
-const tokenRouter = require('./routes/token');
+// API Router
+var authAPIRouter = require('./routes/api/auth');
+var bicicletasAPIRouter = require('./routes/api/bicicletas');
+var usuariosAPIRouter   = require('./routes/api/usuarios');
 
+let store;
 
+if (process.env.NODE_ENV === 'development') {
+  store = session.MemoryStore();
 
+} else {
+  store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: 'sessions'
+  });
 
-const app = express();
-const mongoose = require('mongoose');
-//Conection to the DB
-const mongoDB = process.env.MONGO_URI || 'mongodb://localhost/red_bicicletas';
-mongoose.connect(mongoDB, {
-  useCreateIndex: true,
-  useUnifiedTopology:true,
-  useNewUrlParser: true
-});
-//just set up
-mongoose.Promise = global.Promise;
-const db = mongoose.connection;
-//in case of error conection
-db.on('error', console.error.bind(console, 'MongoDB connection error: '));
+  store.on('error', function (err) {
+    assert.ifError(err);
+    assert.ok(false);
+  });
+}
 
+// Mongoose / ODM MongoDB
+var mongoose = require('mongoose');
+const usuario = require('./models/usuario');
+const { assert } = require('console');
 
-//we save the session in the server (Note. If the server trun off the session is lost)
-const store = new session.MemoryStore;
+var app = express();
+
+app.set('secretKey', 'jwt_pwd_!!223344');
+
+// Config Session
 app.use(session({
-  cookie: {maxAge: 240 * 60 * 60 * 1000}, //time for cookie
-  store: store,//we save in store
+  cookie: { maxAge: 240 * 60 * 60 * 1000 },
+  store: store,
   saveUninitialized: true,
   resave: 'true',
-  secret: 'red_bicicletas_!!!%&/&____234234' //Here you can put anything that is used to encrypt the cookie
-}))
+  secret: 'red_bicis_!!!***!"-!"-!"-!"-!"-!"-123123'
+}));
 
+// Config MongoDB
+const mongoDB = process.env.MONGO_URI;
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('useCreateIndex', true);
+mongoose.Promise = global.Promise;
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error: '));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('pug', require('pug').__express);
 app.set('view engine', 'pug');
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(passport.initialize())
+
+app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', indexRouter);
-app.use('/usuarios', usuariosRouter);
-app.use('/bicicletas', bicicletasRouter);
-app.use('/api/bicicletas', bicicletasAPIRouter);
-app.use('/api/usuarios', usuariosAPIRouter);
-app.use('/usuarios', usuariosRouter);
-app.use('/token', tokenRouter);
 
+// Authentication Routes
+app.get('/login', function (req, res) {
+  res.render('session/login');
+});
 
+app.post('/login', function (req, res, next) {
+  // passport
+  passport.authenticate('local', function (err, usuario, info) {
+    if (err) {
+      return next(err);
+    }
 
-//Handle Routes from app.js
-app.get('/login', (req, res)=>{
-  res.render('session/login')
-})
+    if (!usuario) {
+      return res.render('session/login', { info });
+    }
 
-app.post('/login', (req, res, next)=> {
-  //method of passport
-  passport.authenticate('local', (err, user, info)=>{
-    //if there is a error
-    if(err) return next(err);
-    //if there is not a user , we render login and pass info
-    if(!usuario) return res.render('session/login', {info});
-    req.logIn(usuario, err =>{
-      if(err) return next(err);
-      //if everthing is ok redirect to home
+    req.logIn(usuario, function (err) {
+      if (err) {
+        return next(err);
+      }
+
       return res.redirect('/');
     });
-  }) (req, res, next);
-})
-
-app.get('/logout', (req, res)=>{
-  req.logOut() //clean the session
-  res.redirect('/')
-})
-
-
-app.get('/forgotPassword', (req, res)=>{
-  res.render('session/forgotPassword')
-})
-
-app.post('/forgotPassword', (req, res)=>{
-  Usuario.findOne({email: req.body.email}, (err, usuario)=>{
-    if(!usuario) return res.render('session/forgotPassword', {info: {message: 'No existe la clave'}});
     
-    usuario.resetPassword(err=>{
-      if(err) return next(err);
-      console.log('session/forgotPasswordMessage');
-    })
-    res.render('session/forgotPasswordMessage')
-  })
-})
+  })(req, res, next);
+});
 
-app.get('/resetPassword/:token', (req, res, next)=>{
-  Token.findOne({token: req.params.token}, (err, token)=>{
-    if(!token) return res.status(400).send({type: 'not-verified', msg: 'No existe una clave así'})
+app.get('/logout', function (req, res) {
+  req.logOut();
+  res.redirect('/');
+});
 
-    Usuario.findById(token._userId, (err, usuario)=>{
-      if(!usuario) return res.status(400).send({msg: 'No existe un usuario asociado a este password'});
-      res.render('session/resetPassword', {errors: {}, usuario: usuario})
-    })
-  })
-})
+app.get('/forgotPassword', function (req, res) {
+  res.render('session/forgotPassword');
+});
 
-app.post('/resetPassword', (req, res)=>{
-  if(req.body.password != req.body.confirm_password) {
-    res.render('session/resetPassword', {errors: {confirm_password: {message: 'No coinciden las contraseñas'}}});
+app.post('/forgotPassword', function (req, res, next) {
+  Usuario.findOne({ email: req.body.email }, function (err, usuario) {
+    if (!usuario) {
+      return res.render('session/forgotPassword', {
+        info: { message: 'No existe un usuario con el email ingresado' } 
+      });
+    }
+
+    usuario.resetPassword(function (err) {
+      if (err) {
+        return next(err);
+        console.log('session/forgotPasswordMessage');
+      }
+    });
+
+    res.render('session/forgotPasswordMessage');
+  });
+});
+
+app.get('/resetPassword/:token', function (req, res, next) {
+  Token.findOne({ token: req.params.token }, function (err, token) {
+    if (!token) {
+      return res.status(400).send({
+        type: 'not-verified', 
+        msg: 'No existe un usuario asociado al token.' 
+      });
+    }
+
+    Usuario.findById(token.usuario, function (err, usuario) {
+      if (!usuario) {
+        return res.status(400).send({
+          msg: 'No existe un usuario asociado al token' 
+        });
+      }
+
+      res.render('session/resetPassword', { errors: {}, usuario: usuario });
+    });
+  });
+});
+
+app.post('/resetPassword', function (req, res) {
+  if (req.body.password != req.body.confirm_password) {
+    res.render('session/resetPassword', {
+      errors: {
+        confirm_password: {
+          message: 'No coincide con el password ingresado'
+        }
+      },
+      usuario: new Usuario({ email: req.body.email })
+    });
     return;
   }
-  Usuario.findOne({email: req.body.email}, (err, usuario)=>{
+
+  Usuario.findOne({ email: req.body.email }, function (err, usuario) {
     usuario.password = req.body.password;
-    usuario.save(err=>{
-      if(err){
-        res.render('session/resetPassword', {errors: err.errors, usuario: new Usuario});
+
+    usuario.save(function (err) {
+      if (err) {
+        res.render('session/resetPassword', {
+          errors: err.errors,
+          usuario: new Usuario({ email: req.body.email })
+        });
       } else {
-        res.redirect('/login')
+        res.redirect('/login');
       }
-    })
+    });
+  });
+});
+
+app.get('/auth/google',
+  passport.authenticate('google', {
+    scope: [
+      'https://www.googleapis.com/auth/plus.login',
+      'https://www.googleapis.com/auth/plus.profile.emails.read',
+      'profile',
+      'email'
+    ] 
   })
-})
-//end of handle routes from app.js
+);
 
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/',
+    failureRedirect: '/error'
+  })
+);
 
+app.use('/', indexRouter);
+app.use('/bicicletas', loggedIn, bicicletasRouter);
+app.use('/usuarios', loggedIn, usersRouter);
+app.use('/token', tokenRouter);
 
+// API Routes
+app.use('/api/auth', authAPIRouter);
+app.use('/api/bicicletas', validarUsuario, bicicletasAPIRouter);
+app.use('/api/usuarios', usuariosAPIRouter);
 
+app.use('/privacy_policy', function (req, res) {
+  res.sendFile(path.join(__dirname, './public/privacy_policy.html'));
+});
 
+app.use('/google6b3820df2408003e', function (req, res) {
+  res.sendFile(path.join(__dirname, './public/google6b3820df2408003e.html'));
+});
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
+   res.status(err.status || 500);
   res.render('error');
 });
+
+function loggedIn (req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    console.log('Usuario sin loguearse!');
+    res.redirect('/login');
+  }
+}
+
+function validarUsuario(req, res, next) {
+  jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function (err, decoded) {
+    if (err) {
+      res.json({ status: 'error', message: err.message, data: null });
+    } else {
+      req.body.userId = decoded.id;
+      console.log('JWT Verify: ' + decoded);
+
+      next();
+    }
+  });
+}
 
 module.exports = app;
