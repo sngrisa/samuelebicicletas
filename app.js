@@ -24,6 +24,7 @@ var authAPIRouter = require('./routes/api/auth');
 var bicicletasAPIRouter = require('./routes/api/bicicletas');
 var usuariosAPIRouter   = require('./routes/api/usuarios');
 
+// Session en Memoria (DESA) / en BD (PROD)
 let store;
 
 if (process.env.NODE_ENV === 'development') {
@@ -142,7 +143,7 @@ app.get('/resetPassword/:token', function (req, res, next) {
     if (!token) {
       return res.status(400).send({
         type: 'not-verified', 
-        msg: 'No existe un usuario asociado al token.' 
+        msg: 'No existe un usuario asociado al token. Verifique que su token no haya expirado.' 
       });
     }
 
@@ -205,6 +206,7 @@ app.get('/auth/google/callback',
   })
 );
 
+
 app.use('/', indexRouter);
 app.use('/bicicletas', loggedIn, bicicletasRouter);
 app.use('/usuarios', loggedIn, usersRouter);
@@ -219,19 +221,23 @@ app.use('/privacy_policy', function (req, res) {
   res.sendFile(path.join(__dirname, './public/privacy_policy.html'));
 });
 
-app.use('/google6b3820df2408003e', function (req, res) {
-  res.sendFile(path.join(__dirname, './public/google6b3820df2408003e.html'));
+app.use('/googlef4e9afda0e8eea14', function (req, res) {
+  res.sendFile(path.join(__dirname, './public/googlef4e9afda0e8eea14.html'));
 });
 
+// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
+// error handler
 app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-   res.status(err.status || 500);
+  // render the error page
+  res.status(err.status || 500);
   res.render('error');
 });
 

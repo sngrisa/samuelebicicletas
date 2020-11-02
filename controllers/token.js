@@ -6,7 +6,7 @@ exports.confirmation_get = function (req, res, next) {
         if (!token) {
             return res.status(400).send({
                 type: 'not-verified',
-                msg: 'No se encontró un usuario con éste token. Intente de nuevo'
+                msg: 'No se encontró un usuario con éste token. Quizas haya expirado y deba solicitarlo nuevamente.'
             });
         }
 

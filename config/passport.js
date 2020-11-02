@@ -21,7 +21,7 @@ passport.use(new LocalStrategy(
             }
 
             if (!usuario.verificado) {
-                return done(null, false, { message: 'Cuenta de usuario sin activar' });
+                return done(null, false, { message: 'La cuenta del usuario no ha sido activada' });
             }
             
             return done(null, usuario);

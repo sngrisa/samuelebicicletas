@@ -1,14 +1,21 @@
 var mongoose = require('mongoose');
 var Reserva = require('./reserva');
-var Schema = mongoose.Schema;
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+
 const crypto = require('crypto');
 const uniqueValidator = require('mongoose-unique-validator');
 const Token = require('../models/token');
 const mailer = require('../mailer/mailer');
-const validateEmail = function (email) { const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; return re.test(email); }
+
+var Schema = mongoose.Schema;
+
+
+const validateEmail = function (email) {
+    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email);
+}
 
 var usuarioSchema = new Schema({
     nombre: {
@@ -31,18 +38,32 @@ var usuarioSchema = new Schema({
     },
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
-    verificado: { type: Boolean, default: false },
+    verificado: {
+        type: Boolean,
+        default: false
+    },
     googleId: String,
     facebookId: String
 });
  
+// Agregar el Plugin (Librería) mongoose-unique-validator al Schema del usuario
 usuarioSchema.plugin(uniqueValidator, { message: 'El {PATH} ya existe con otro usuario' });
+
+/**
+ * Antes de guardar el documento valida si ha sido modificado el password, 
+ * y en dicho caso vuelve y lo encripta. No olvidar ejecutar next()
+ */
 usuarioSchema.pre('save', function (next) {
-    if (this.isModified('password')) {this.password = bcrypt.hashSync(this.password, saltRounds);}
+    if (this.isModified('password')) {
+        this.password = bcrypt.hashSync(this.password, saltRounds);
+    }
     next();
 });
 
-usuarioSchema.methods.validPassword = function (password) {return bcrypt.compareSync(password, this.password);}
+usuarioSchema.methods.validPassword = function (password) {
+    return bcrypt.compareSync(password, this.password);
+}
+
 usuarioSchema.methods.reservar = function (biciID, desde, hasta, cb) {
     var reserva = new Reserva({
         desde: desde,
@@ -80,7 +101,7 @@ usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
                 console.log(err);
             }
 
-            console.log('Enviado un email de verificación a ' + email_destination + '.');
+            console.log('Se ha enviado un email de verificación a ' + email_destination + '.');
         });
     });
 }
@@ -132,7 +153,7 @@ usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(conditi
             callback(err, result);
         } else {
             let values = {};
-            console.log('<<<<<<<<<<<<<<< CONDICION >>>>>>>>>>>>>>>');
+            console.log('=============== CONDITION ===============');
             console.log(condition);
 
             values.googleId = condition.id;
@@ -141,7 +162,7 @@ usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(conditi
             values.verificado = true;
             values.password = crypto.randomBytes(16).toString('hex');
 
-            console.log('<<<<<<<<<<<<<<< VALORES >>>>>>>>>>>>>>>');
+            console.log('=============== VALUES ===============');
             console.log(values);
 
             self.create(values, function (err, user) {
@@ -170,7 +191,7 @@ usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(condi
             callback(err, result);
         } else {
             let values = {};
-            console.log('<<<<<<<<<<<<<<< CONDICION >>>>>>>>>>>>>>>');
+            console.log('=============== CONDITION ===============');
             console.log(condition);
 
             values.facebookId = condition.id;
@@ -179,7 +200,7 @@ usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(condi
             values.verificado = true;
             values.password = crypto.randomBytes(16).toString('hex');
 
-            console.log('<<<<<<<<<<<<<<< VALORES >>>>>>>>>>>>>>>');
+            console.log('=============== VALUES ===============');
             console.log(values);
 
             self.create(values, function (err, user) {
