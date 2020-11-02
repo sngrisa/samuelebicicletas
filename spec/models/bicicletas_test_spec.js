@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 var Bicicleta = require('../../models/bicicleta');
 
 describe('Testeando Bicicletas', ()=>{
-
+  
+  beforeAll((done) => { mongoose.connection.close(done) });
   beforeEach(function(done){
     var mongodb = 'mongodb://localhost/bicicletas';
     mongoose.connect(mongodb, {useNewUrlParser: true,

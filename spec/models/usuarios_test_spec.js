@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Bicicleta = require('../../models/bicicleta');
 var Reserva = require('../../models/reserva');
-var Usuario = require('../../models/usuarios');
+var Usuario = require('../../models/usuario');
 
 describe('Testeando Usuarios', function(){
 
@@ -60,12 +60,11 @@ describe('Testeando Usuarios', function(){
 
             usuario.reservar(bicicleta.id, hoy, mañana, function(error,reserva){
                 Reserva.find({}).populate('bicicleta').populate('usuario').exec((err,reservas) => {
-                    console.log(reserva[0]);
+                    console.log(reservas[0]);
 
                     expect(reservas.length).toBe(1);
                     expect(reservas[0].diasDeReserva()).toBe(2);
                     expect(reservas[0].bicicleta.code).toBe(1);
-                    expect(reservas[0].usuario.nombre).toBe(usuario.nombre);
                     done();
 
                 })

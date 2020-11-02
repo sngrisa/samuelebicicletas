@@ -7,6 +7,7 @@ var base_url = "http://localhost:3000/api/bicicletas";
 
 
 describe('EQUIPOS API', () => {
+  beforeAll((done) => { mongoose.connection.close(done) });
     beforeAll(function(done) {
       mongoose.connection.close().then(() => {
         var mongoDB = 'mongodb://localhost/testdb';
