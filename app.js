@@ -210,7 +210,7 @@ app.get('/auth/google/callback',
 
 app.use('/', indexRouter);
 app.use('/bicicletas', loggedIn, bicicletasRouter);
-app.use('/usuarios', usuariosRouter);
+app.use('/usuarios', loggedIn, usuariosRouter);
 app.use('/token', tokenRouter);
 
 // API Routes
