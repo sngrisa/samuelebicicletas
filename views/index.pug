@@ -13,18 +13,17 @@ block content
         #navbarResponsive.collapse.navbar-collapse
           ul.navbar-nav.ml-auto
             li.nav-item
-              a.nav-link.js-scroll-trigger(href="#about") Nuestra Actividad
+              a.nav-link.js-scroll-trigger(href='/') Home
             li.nav-item
-              a.nav-link.js-scroll-trigger(href="#projects") Nuestra Historia
+              a.nav-link.js-scroll-trigger(href='/usuarios') Usuarios
             li.nav-item
-              a.nav-link.js-scroll-trigger(href="#signup") Suscribirse
+              a.nav-link.js-scroll-trigger(href='/bicicletas') Bicicletas
     // Masthead
     header.masthead
       .container.d-flex.h-100.align-items-center
         .mx-auto.text-center
           h1.mx-auto.my-0.text-uppercase Samuele Bicicletas
-          h2.text-white-50.mx-auto.mt-2.mb-5  Bienvenidos a la pagina oficial de Samuele Bicicletas, para loguearse en el sistema haga click en el siguiente boton.
-          a.btn.btn-primary.js-scroll-trigger(href="/login") Ir al login
+          h2.text-white-50.mx-auto.mt-2.mb-5  Bienvenidos a la pagina oficial de Samuele Bicicletas...
     // About
     section#about.about-section.text-center
       .container
@@ -34,7 +33,6 @@ block content
             p.text-white-50
               | Contamos con personal altamente calificado 
               | Brindamos asesoramiento y facilidades a nuestros clientes, seleccion de partes de bicicletas y venta de las mismas.
-        img.img-fluid(src="/images/ipad.png" alt="")
     // Projects
     section#projects.projects-section.bg-light
       .container
@@ -76,11 +74,6 @@ block content
       .container
         .row
           .col-md-10.col-lg-8.mx-auto.text-center
-            i.far.fa-paper-plane.fa-2x.mb-2.text-white
-            h2.text-white.mb-5 Suscribase para nuevas novedades!
-            form.form-inline.d-flex
-              input#inputEmail.form-control.flex-fill.mr-0.mr-sm-2.mb-3.mb-sm-0(type="email" placeholder="Ingrese su correo...")
-              button.btn.btn-primary.mx-auto(type="submit") Suscribirse
     // Contact
     section.contact-section.bg-black
       .container
@@ -126,6 +119,11 @@ block content
             i.fab.fa-facebook-f
           a.mx-2(href="http://github.com/sngrisa/")
             i.fab.fa-github
+          a.mx-2(href="https://www.instagram.com/s.grisafi/")
+            i.fab.fa-instagram
+          a.mx-2(href="https://www.linkedin.com/in/santiago-grisafi")
+            i.fab.fa-linkedin-in
+            
     // Footer
     footer.footer.bg-black.small.text-center.text-white-50
       .container Copyright © 2020 Samuele Bicicletas. Hecha por SiG Software
