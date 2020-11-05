@@ -1,30 +1,32 @@
-extends ../layout 
+extends ../layout
 
 block content
-   br
-   text-center
-   a.btn.btn-secondary(href='/bicicletas') Volver
-   br
-   h4.text-center Añadir una nueva Bicicleta
-       h6.text-center
-        br
-        form(action='/bicicletas/create' method='post')
-            label(for='id') Ingrese un id:
-            input#id(type='text' name='id')
-            br
-            label(for='color') Ingrese el color:
-            input#color(type='text' name='color')
-            br
-            label(for='modelo') Ingrese el modelo:
-            input#modelo(type='text' name='modelo')
-            br
-            h6 Ingrese la ubicacion:
-            label(for='lat') Latitud:
-            input#modelo(type='text' name='lat')
-            br
-            label(for='lng') Longitud:
-            input#modelo(type='text' name='lng')
-            br
-            br
-            input#btn(type='submit' name='OK')
-            br
+  br
+  a(href="/bicicletas" class="btn btn-link") Volver al Menu de Gestion de Bicicletas
+
+  br
+  br
+  br
+
+  h1 Dar de Alta una Nueva Bicicleta
+
+  br
+  br
+  form(action="/bicicletas/create" method="post")
+    label(for="code") Código:
+    input#code(type="text" name="code")
+    br
+    label(for="color") Color:
+    input#color(type="text" name="color")
+    br
+    label(for="modelo") Modelo:
+    input#modelo(type="text" name="modelo")
+    br
+    label(for="lat") Latitud:
+    input#lat(type="text" name="lat")
+    br
+    label(for="lng") Longitud:
+    input#lng(type="text" name="lng")
+    br
+    br
+    input.btn(type="submit" class="btn btn-primary" value="OK")

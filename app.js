@@ -15,9 +15,8 @@ const Usuario = require('./models/usuario');
 const Token = require('./models/token');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/usuarios');
+var usersRouter = require('./routes/users');
 var usuariosRouter= require('./routes/usuarios');
-var biciRouter = require('./routes/bicicletas');
 var bicicletasRouter = require('./routes/bicicletas');
 var tokenRouter = require('./routes/token');
 
@@ -211,10 +210,8 @@ app.get('/auth/google/callback',
 
 app.use('/', indexRouter);
 app.use('/bicicletas', loggedIn, bicicletasRouter);
-app.use('/usuarios', loggedIn, usersRouter);
-app.use('/usuario', usuariosRouter);
+app.use('/usuarios', usuariosRouter);
 app.use('/token', tokenRouter);
-app.use('/bici', biciRouter);
 
 // API Routes
 app.use('/api/auth', authAPIRouter);
