@@ -215,7 +215,7 @@ app.use('/token', tokenRouter);
 
 // API Routes
 app.use('/api/auth', authAPIRouter);
-app.use('/api/bicicletas', validarUsuario, bicicletasAPIRouter);
+app.use('/api/bicicletas', bicicletasAPIRouter);
 app.use('/api/usuarios', usuariosAPIRouter);
 
 app.use('/privacy_policy', function (req, res) {
