@@ -24,7 +24,7 @@ bicicletaSchema.statics.createInstance = function (code, color, modelo, ubicacio
 };
 
 bicicletaSchema.methods.toString = function () { 
-    return 'code: ' + this.code + ' | color: ' + this.color; };
+    return 'id: ' + this.code + ' | color: ' + this.color; };
 bicicletaSchema.statics.allBicis = function (cb) { 
     return this.find({}, cb); };
 bicicletaSchema.statics.add = function (oBici, cb) { 
