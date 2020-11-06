@@ -7,7 +7,7 @@ describe('Testeando Usuarios', function(){
 
     beforeAll((done) => { mongoose.connection.close(done) });
     beforeEach(function(done){
-        var mongodb = 'mongodb://localhost/testdb';
+        var mongodb = 'mongodb://localhost/bicicletas';
         mongoose.connect(mongodb, { useNewUrlParser: true, useUnifiedTopology: true });
 
         const db = mongoose.connection;
@@ -48,9 +48,9 @@ describe('Testeando Usuarios', function(){
             usuario.save();
 
             const bicicleta = new Bicicleta({
-                code: 1,
-                color: "azul",
-                modelo: "BMX",
+                code: 7,
+                color: "rojo",
+                modelo: "aerith",
             })
             bicicleta.save();
 
@@ -64,7 +64,7 @@ describe('Testeando Usuarios', function(){
 
                     expect(reservas.length).toBe(1);
                     expect(reservas[0].diasDeReserva()).toBe(2);
-                    expect(reservas[0].bicicleta.code).toBe(1);
+                    expect(reservas[0].bicicleta.code).toBe(7);
                     done();
 
                 })
