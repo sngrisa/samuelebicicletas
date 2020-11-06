@@ -223,7 +223,7 @@ app.use('/privacy_policy', function (req, res) {
 });
 
 app.use('/googlef4e9afda0e8eea14', function (req, res) {
-  res.sendFile(path.join(__dirname, './public/googlef4e9afda0e8eea14.html'));
+  res.sendFile(path.join(__dirname, './public/google4bbbc459dce1bc50.html'));
 });
 
 // catch 404 and forward to error handler
