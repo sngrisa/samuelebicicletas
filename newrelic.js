@@ -9,18 +9,18 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: ['Red Bicicletas'],
+  app_name: ['samuelebicicletas7'],
   /**
    * Your New Relic license key.
    */
-  license_key: '4315f3482cf1b61b0247de2a04dc9b51d696NRAL',
+  license_key: 'eu01xxfb685c911ab27ef3fe68266bcffe3fNRAL',
   /**
    * This setting controls distributed tracing.
    * Distributed tracing lets you see the path that a request takes through your
    * distributed system. Enabling distributed tracing changes the behavior of some
    * New Relic features, so carefully consult the transition guide before you enable
    * this feature: https://docs.newrelic.com/docs/transition-guide-distributed-tracing
-   * Default is true.
+   * Default is false.
    */
   distributed_tracing: {
     /**
@@ -28,7 +28,7 @@ exports.config = {
      *
      * @env NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
      */
-    enabled: true
+    enabled: false
   },
   logging: {
     /**
